@@ -10,7 +10,10 @@ use `byebye help` to see the best way to do that.
 Disclaimer : Be careful and only use this if you know your config will not kill something that will mess your computer up.
 
 Example ~/.byebyerc
+
+```
 interrupt chrome
 interrupt telegram
 interrupt code
 termintate tmux
+```
