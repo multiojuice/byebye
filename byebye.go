@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 func check(e error) {
@@ -37,7 +38,11 @@ func main() {
 	currentCommand := configList.Front()
 
 	for currentCommand != nil {
-		fmt.Println(currentCommand.Value)
+		currentCommandArray := strings.Split(currentCommand.Value.(string), " ")
+		fmt.Println(currentCommandArray[0])
+		fmt.Println(currentCommandArray[1])
+		fmt.Println(currentCommandArray[2])
+
 		currentCommand = currentCommand.Next()
 	}
 
