@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/user"
 	"strings"
 )
 
@@ -16,7 +17,10 @@ func check(e error) {
 }
 
 func main() {
-	f, err := os.Open("/home/multiojuice/.byebyerc")
+	currentUser, userErr := user.Current()
+	check(userErr)
+
+	f, err := os.Open(currentUser.HomeDir + "/.byebyerc")
 	check(err)
 
 	configList := list.New()
