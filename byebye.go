@@ -17,7 +17,7 @@ func check(e error) {
 	}
 }
 
-func byebye() {
+func byebye(isAll bool) {
 	currentUser, userErr := user.Current()
 	check(userErr)
 
@@ -42,22 +42,38 @@ func byebye() {
 
 	currentCommand := configList.Front()
 
-	for currentCommand != nil {
-		currentCommandArray := strings.Split(currentCommand.Value.(string), " ")
+	if isAll {
+		for currentCommand != nil {
+			currentCommandArray := strings.Split(currentCommand.Value.(string), " ")
 
-		cmd := exec.Command("pkill", currentCommandArray[0], currentCommandArray[1])
-		cmdErr := cmd.Run()
-		check(cmdErr)
+			cmd := exec.Command("pkill", currentCommandArray[0], currentCommandArray[1])
+			cmdErr := cmd.Run()
+			check(cmdErr)
 
-		currentCommand = currentCommand.Next()
+			currentCommand = currentCommand.Next()
+		}
+	} else {
+		scanner := bufio.NewScanner(os.Stdin)
+
+		for currentCommand != nil {
+			currentCommandArray := strings.Split(currentCommand.Value.(string), " ")
+
+			fmt.Println("Enter 'y' if you would like to end: ", currentCommandArray[1])
+			scanner.Scan()
+			if scanner.Text() == "y" || scanner.Text() == "yes" {
+				cmd := exec.Command("pkill", currentCommandArray[0], currentCommandArray[1])
+				cmdErr := cmd.Run()
+				check(cmdErr)
+			}
+			currentCommand = currentCommand.Next()
+		}
 	}
-
 	f.Close()
 }
 
 func main() {
 	if len(os.Args) < 2 {
-		byebye()
+		byebye(true)
 	} else {
 		switch os.Args[1] {
 		case "help":
@@ -80,7 +96,7 @@ func main() {
 			fmt.Println("\t\t\t- If byebye does't end a process how you want it to, try changing the configuration and signal that you send to that process, try to adjust the force of the signal (described above) to fit your use case.")
 
 		case "some":
-			byebye()
+			byebye(false)
 
 		default:
 			fmt.Println("Unknown subcommand, try `byebye help`")
