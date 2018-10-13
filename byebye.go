@@ -17,6 +17,28 @@ func check(e error) {
 	}
 }
 
+func getSignalFromString(configSignal string) string {
+	switch configSignal {
+	case "Hangup":
+		fallthrough
+	case "hangup":
+		return "-SIGHUP"
+	case "Interupt":
+		fallthrough
+	case "interrupt":
+		return "-SIGINT"
+	case "Terminate":
+		fallthrough
+	case "terminate":
+		return "-SIGTERM"
+	case "Kill":
+		fallthrough
+	case "kill":
+		return "-SIGKILL"
+	}
+	return "-SIGTERM"
+}
+
 func byebye(isAll bool) {
 	currentUser, userErr := user.Current()
 	check(userErr)
@@ -46,7 +68,7 @@ func byebye(isAll bool) {
 		for currentCommand != nil {
 			currentCommandArray := strings.Split(currentCommand.Value.(string), " ")
 
-			cmd := exec.Command("pkill", currentCommandArray[0], currentCommandArray[1])
+			cmd := exec.Command("pkill", getSignalFromString(currentCommandArray[0]), currentCommandArray[1])
 			cmdErr := cmd.Run()
 			check(cmdErr)
 
@@ -61,7 +83,7 @@ func byebye(isAll bool) {
 			fmt.Println("Enter 'y' if you would like to end: ", currentCommandArray[1])
 			scanner.Scan()
 			if scanner.Text() == "y" || scanner.Text() == "yes" {
-				cmd := exec.Command("pkill", currentCommandArray[0], currentCommandArray[1])
+				cmd := exec.Command("pkill", getSignalFromString(currentCommandArray[0]), currentCommandArray[1])
 				cmdErr := cmd.Run()
 				check(cmdErr)
 			}
@@ -91,6 +113,10 @@ func main() {
 			fmt.Println("\t\t\t\t'interrupt' -> sends a SIGINT or 2 to the program, this will 'gracefully' shut down most apps")
 			fmt.Println("\t\t\t\t'terminate' -> sends a SIGTERM or 15 signal, this will be a bit more forceful than an interupt. the same signal send by the kill command")
 			fmt.Println("\t\t\t\t'kill' -> sends a SIGKILL or a 9 to the process, this will completely and always shut a process down, very forceful.")
+			fmt.Println("\t\tExample config:")
+			fmt.Println("\t\t\tinterrupt code")
+			fmt.Println("\t\t\tinterrupt chrome")
+			fmt.Println("\t\t\tterminate tmux")
 			fmt.Println("\t\tTips:")
 			fmt.Println("\t\t\t- The order of your process config matters! If you kill your tmux session or your terminal instance first, nothing else will be executed, do those last")
 			fmt.Println("\t\t\t- If byebye does't end a process how you want it to, try changing the configuration and signal that you send to that process, try to adjust the force of the signal (described above) to fit your use case.")
