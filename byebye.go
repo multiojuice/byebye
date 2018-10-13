@@ -1,9 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"log"
+	"os/exec"
 )
 
 func main() {
-	fmt.Println("Hello World")
+	cmd := exec.Command("pkill", "tmux")
+	log.Printf("Bye bye!")
+	err := cmd.Run()
+	log.Printf("Command finished with error: %v", err)
 }
